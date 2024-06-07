@@ -1,4 +1,4 @@
-package com.blogbackend.blog.security;
+package com.blogbackend.blog.payloads;
 
 
 import lombok.Data;

@@ -34,14 +34,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         //1. get Toekn
 
         String requestToken = request.getHeader("Authorization");
+        System.out.println("Token received : "+requestToken);
 
         String username = null;
         String token = null;
 
-        if(requestToken != null && requestToken.startsWith("Bearer")){
+        if(requestToken != null && requestToken.startsWith("Bearer ")){
             token = requestToken.substring(7);
+            System.out.println("Extracted Token : "+token);
             try{
                 username = this.jwtTokenHelper.getUsernameFromToken(token);
+                System.out.println("Extracted UserName : "+username);
             }
             catch(IllegalArgumentException e){
                 System.out.println("Unable to get Jwt token");
@@ -64,12 +67,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
+            System.out.println("Userdetails : "+userDetails);
+
             if(this.jwtTokenHelper.validateToken(token,userDetails)){
 
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
                 usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                SecurityContextHolder.getContext().setAuthentication(null);
+                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             }else{
                 System.out.println("Invalid jwt token");
             }
